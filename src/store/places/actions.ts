@@ -2,6 +2,7 @@ import { ActionTree } from 'vuex';
 import { PlacesState } from './state';
 import { StateInterface } from '../index';
 import { searchApi } from '@/api';
+import { Places } from '@/interfaces/places';
 
 
 const actions: ActionTree<PlacesState, StateInterface> = {
@@ -19,13 +20,13 @@ const actions: ActionTree<PlacesState, StateInterface> = {
     //TODO: colocar el valor de retorno
     async searchPlacesByTerm({commit, state}, query: string){
         
-        const resp = await searchApi(`/${query}.json`, {
+        const resp = await searchApi.get<Places>(`/${query}.json`, {
             params: {
                 proximity: state.userLocation?.join(',')
             }
         })
 
-        console.log(resp.data)
+        console.log(resp.data.features)
 
     }
 }
