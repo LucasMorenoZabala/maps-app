@@ -7,6 +7,9 @@ export interface Places {
 export interface Feature {
     type:       string;
     id:         string;
+    center:        number[];
+    text:          string;
+    place_name:    string;
     geometry:   Geometry;
     properties: Properties;
 }

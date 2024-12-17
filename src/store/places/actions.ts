@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex';
 import { PlacesState } from './state';
 import { StateInterface } from '../index';
 import { searchApi } from '@/api';
-import { Places } from '@/interfaces/places';
+import { Feature, Places } from '@/interfaces/places';
 
 
 const actions: ActionTree<PlacesState, StateInterface> = {
@@ -18,15 +18,30 @@ const actions: ActionTree<PlacesState, StateInterface> = {
         )
     },
     //TODO: colocar el valor de retorno
-    async searchPlacesByTerm({commit, state}, query: string){
+    async searchPlacesByTerm({commit, state}, query: string): Promise<Feature[]>{
         
+        
+        //Devolvemos un array vacio, ya que lo que nos va a devolver si o si, va a ser un array, ya sea vacio o con los datos
+        if(query.length === 0){
+            commit('setPlaces', [])
+            return []
+        }
+
+        if(!state.userLocation){
+            throw new Error('No hay ubicación del usuario')
+        }
+
+        commit('setIsLoadingPlaces')
+
         const resp = await searchApi.get<Places>(`/${query}.json`, {
             params: {
                 proximity: state.userLocation?.join(',')
             }
         })
 
-        console.log(resp.data.features)
+        commit('setPlaces', resp.data.features)
+
+        return resp.data.features
 
     }
 }
